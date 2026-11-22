@@ -161,8 +161,71 @@ if(AEGIS_BUILD_BENCH)
 endif()
 
 # ------------------------------------------------------------------ layout
-set_target_properties(aegis aegis_tests aegis_bench mock_upstream PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+# Keep every configuration in a single bin/ directory so the runtime DLLs that
+# get copied next to the binaries always sit beside them, also for multi config
+# generators (Visual Studio).
+foreach(target aegis aegis_tests aegis_bench mock_upstream)
+    if(TARGET ${target})
+        set_target_properties(${target} PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+            RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/bin"
+            RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/bin"
+            RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/bin"
+            RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/bin")
+    endif()
+endforeach()
+
+# ------------------------------------------------------------------ Windows runtime
+# MinGW builds link against the GCC runtime DLLs by default. They are not on PATH
+# for a normal user, so copy them next to the binaries - double clicking
+# build/bin/aegis.exe then just works. Set -DAEGIS_STATIC_RUNTIME=ON to link the
+# runtime statically instead (binaries get bigger, no DLLs required).
+option(AEGIS_STATIC_RUNTIME "Link the GCC runtime statically on MinGW" OFF)
+
+if(WIN32 AND MINGW)
+    if(AEGIS_STATIC_RUNTIME)
+        target_link_options(aegis_core INTERFACE -static-libgcc -static-libstdc++ -static)
+        message(STATUS "MinGW runtime: static")
+    else()
+        get_filename_component(AEGIS_MINGW_BIN "${CMAKE_CXX_COMPILER}" DIRECTORY)
+        set(AEGIS_RUNTIME_DLLS
+            "${AEGIS_MINGW_BIN}/libgcc_s_seh-1.dll"
+            "${AEGIS_MINGW_BIN}/libstdc++-6.dll"
+            "${AEGIS_MINGW_BIN}/libwinpthread-1.dll")
+
+        add_custom_target(aegis_runtime ALL
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/bin"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AEGIS_RUNTIME_DLLS}
+                    "${CMAKE_BINARY_DIR}/bin"
+            COMMENT "Copying MinGW runtime DLLs into bin/")
+
+        foreach(target aegis aegis_tests aegis_bench mock_upstream)
+            if(TARGET ${target})
+                add_dependencies(${target} aegis_runtime)
+            endif()
+        endforeach()
+        message(STATUS "MinGW runtime: copied into ${CMAKE_BINARY_DIR}/bin")
+    endif()
+endif()
+
+if(MSVC)
+    # Copy the Visual C++ runtime next to the binaries as well, so build\bin is
+    # runnable on a machine without the VC++ redistributable.
+    include(InstallRequiredSystemLibraries)
+    if(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS)
+        add_custom_target(msvc_runtime ALL
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/bin"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+                    "${CMAKE_BINARY_DIR}/bin"
+            COMMENT "Copying MSVC runtime DLLs into bin/")
+        foreach(target aegis aegis_tests aegis_bench mock_upstream)
+            if(TARGET ${target})
+                add_dependencies(${target} msvc_runtime)
+            endif()
+        endforeach()
+        message(STATUS "MSVC runtime: copied into ${CMAKE_BINARY_DIR}/bin")
+    endif()
+endif()
 
 message(STATUS "Aegis | compiler ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}"
                " | build ${CMAKE_BUILD_TYPE} | c++${CMAKE_CXX_STANDARD}")

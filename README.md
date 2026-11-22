@@ -137,10 +137,23 @@ ctest --test-dir build --output-on-failure
 
 ### Windows / macOS
 
+Windows 下 MinGW 构建会把 GCC 运行时（`libgcc_s_seh-1.dll`、`libstdc++-6.dll`、`libwinpthread-1.dll`）
+自动复制到 `build/bin`，MSVC 构建会把 VC 运行时一并复制，双击 `build\bin\aegis.exe` 即可运行；
+也可以加 `-DAEGIS_STATIC_RUNTIME=ON` 走静态链接，彻底不依赖 DLL。
+
 ```powershell
 cmake -S . -B build -G "Visual Studio 17 2022" -A x64
 cmake --build build --config Release
 ctest --test-dir build -C Release --output-on-failure
+```
+
+MinGW / Ninja：
+
+```powershell
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+.\run.bat                  # 起假上游 + 网关，一键演示
+.\deploy.bat               # 打包成 dist\：可执行文件 + 运行时 DLL + 配置
 ```
 
 macOS 使用 `cmake -S . -B build -G Ninja && cmake --build build` 即可（Poller 自动退化为 `poll(2)`）。

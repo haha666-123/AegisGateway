@@ -23,6 +23,7 @@ cmake-build-*/
 *.user
 
 # runtime artefacts
+dist/
 *.log
 logs/
 *.pid
