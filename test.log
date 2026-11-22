@@ -1,0 +1,8 @@
+Internal ctest changing into directory: D:/a/AegisGateway/AegisGateway/build
+Test project D:/a/AegisGateway/AegisGateway/build
+    Start 1: aegis_tests
+1/1 Test #1: aegis_tests ......................   Passed    4.56 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   4.60 sec

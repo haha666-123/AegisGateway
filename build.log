@@ -1,0 +1,86 @@
+MSBuild version 17.14.60+43b635718 for .NET Framework
+
+  1>Checking Build System
+  Copying MSVC runtime DLLs into bin/
+  Building Custom Rule D:/a/AegisGateway/AegisGateway/CMakeLists.txt
+  Building Custom Rule D:/a/AegisGateway/AegisGateway/CMakeLists.txt
+  Util.cpp
+  Json.cpp
+  Log.cpp
+D:\a\AegisGateway\AegisGateway\src\common\MpscQueue.h(113,1): warning C4324: 'aegis::MpscBoundedQueue<aegis::`anonymous-namespace'::Record,8192>': structure was padded due to alignment specifier [D:\a\AegisGateway\AegisGateway\build\aegis_core.vcxproj]
+  (compiling source file '../src/common/Log.cpp')
+      D:\a\AegisGateway\AegisGateway\src\common\MpscQueue.h(113,1):
+      the template instantiation context (the oldest one first) is
+          D:\a\AegisGateway\AegisGateway\src\common\Log.cpp(52,11):
+          see reference to class template instantiation 'aegis::MpscBoundedQueue<aegis::`anonymous-namespace'::Record,8192>' being compiled
+  
+D:\a\AegisGateway\AegisGateway\src\common\Log.cpp(80,21): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details. [D:\a\AegisGateway\AegisGateway\build\aegis_core.vcxproj]
+D:\a\AegisGateway\AegisGateway\src\common\Log.cpp(147,39): warning C4858: discarding return value: This function returns whether the operation succeeded in modifying object state. It is dangerous to ignore the return value. [D:\a\AegisGateway\AegisGateway\build\aegis_core.vcxproj]
+  Metrics.cpp
+  ThreadPool.cpp
+  RateLimiter.cpp
+  Socket.cpp
+  Poller.cpp
+  EventLoop.cpp
+  Http.cpp
+  Resolver.cpp
+  TcpServer.cpp
+  HttpClient.cpp
+  Sse.cpp
+  Tokenizer.cpp
+  Prompt.cpp
+  Embedding.cpp
+  Cache.cpp
+  Router.cpp
+  OpenAiClient.cpp
+  Generating Code...
+  Compiling...
+  Config.cpp
+D:\a\AegisGateway\AegisGateway\src\app\Config.cpp(14,30): warning C4996: 'getenv': This function or variable may be unsafe. Consider using _dupenv_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details. [D:\a\AegisGateway\AegisGateway\build\aegis_core.vcxproj]
+  Gateway.cpp
+  Generating Code...
+  aegis_core.vcxproj -> D:\a\AegisGateway\AegisGateway\build\Release\aegis_core.lib
+  Building Custom Rule D:/a/AegisGateway/AegisGateway/CMakeLists.txt
+  Building Custom Rule D:/a/AegisGateway/AegisGateway/CMakeLists.txt
+  MockUpstream.cpp
+  main.cpp
+  aegis_tools.vcxproj -> D:\a\AegisGateway\AegisGateway\build\Release\aegis_tools.lib
+  Building Custom Rule D:/a/AegisGateway/AegisGateway/CMakeLists.txt
+  Building Custom Rule D:/a/AegisGateway/AegisGateway/CMakeLists.txt
+  Building Custom Rule D:/a/AegisGateway/AegisGateway/CMakeLists.txt
+  bench.cpp
+  mock_upstream_main.cpp
+  test_main.cpp
+  aegis.vcxproj -> D:\a\AegisGateway\AegisGateway\build\bin\aegis.exe
+  test_core.cpp
+D:\a\AegisGateway\AegisGateway\src\common\MpscQueue.h(113,1): warning C4324: 'aegis::MpscBoundedQueue<int,8192>': structure was padded due to alignment specifier [D:\a\AegisGateway\AegisGateway\build\aegis_bench.vcxproj]
+  (compiling source file '../bench/bench.cpp')
+      D:\a\AegisGateway\AegisGateway\src\common\MpscQueue.h(113,1):
+      the template instantiation context (the oldest one first) is
+          D:\a\AegisGateway\AegisGateway\bench\bench.cpp(142,45):
+          see reference to class template instantiation 'aegis::MpscBoundedQueue<int,8192>' being compiled
+  
+  mock_upstream.vcxproj -> D:\a\AegisGateway\AegisGateway\build\bin\mock_upstream.exe
+D:\a\AegisGateway\AegisGateway\src\common\MpscQueue.h(113,1): warning C4324: 'aegis::MpscBoundedQueue<int,4>': structure was padded due to alignment specifier [D:\a\AegisGateway\AegisGateway\build\aegis_tests.vcxproj]
+  (compiling source file '../tests/test_core.cpp')
+      D:\a\AegisGateway\AegisGateway\src\common\MpscQueue.h(113,1):
+      the template instantiation context (the oldest one first) is
+          D:\a\AegisGateway\AegisGateway\tests\test_core.cpp(109,30):
+          see reference to class template instantiation 'aegis::MpscBoundedQueue<int,4>' being compiled
+  
+D:\a\AegisGateway\AegisGateway\src\common\MpscQueue.h(113,1): warning C4324: 'aegis::MpscBoundedQueue<int,1024>': structure was padded due to alignment specifier [D:\a\AegisGateway\AegisGateway\build\aegis_tests.vcxproj]
+  (compiling source file '../tests/test_core.cpp')
+      D:\a\AegisGateway\AegisGateway\src\common\MpscQueue.h(113,1):
+      the template instantiation context (the oldest one first) is
+          D:\a\AegisGateway\AegisGateway\tests\test_core.cpp(132,33):
+          see reference to class template instantiation 'aegis::MpscBoundedQueue<int,1024>' being compiled
+  
+  aegis_bench.vcxproj -> D:\a\AegisGateway\AegisGateway\build\bin\aegis_bench.exe
+  test_json.cpp
+  test_http.cpp
+  test_net.cpp
+  test_ai.cpp
+  test_e2e.cpp
+  Generating Code...
+  aegis_tests.vcxproj -> D:\a\AegisGateway\AegisGateway\build\bin\aegis_tests.exe
+  Building Custom Rule D:/a/AegisGateway/AegisGateway/CMakeLists.txt

@@ -1,0 +1,144 @@
+Start testing: Nov 22 11:27 Coordinated Universal Time
+----------------------------------------------------------
+1/1 Testing: aegis_tests
+1/1 Test: aegis_tests
+Command: "D:/a/AegisGateway/AegisGateway/build/bin/aegis_tests.exe"
+Directory: D:/a/AegisGateway/AegisGateway/build
+"aegis_tests" start time: Nov 22 11:27 Coordinated Universal Time
+Output:
+----------------------------------------------------------
+[ OK ] status_basic (10 checks)
+[ OK ] util_string_helpers (10 checks)
+[ OK ] util_sanitize_and_bytes (7 checks)
+[ OK ] util_hash_and_random (21 checks)
+[ OK ] util_time_format (5 checks)
+[ OK ] mpsc_fifo_and_bounds (17 checks)
+[ OK ] mpsc_multi_producer_stress (60002 checks)
+[ OK ] logger_writes_file_with_level_filter (5 checks)
+[ OK ] logger_rotates_files (3 checks)
+[ OK ] logger_survives_overflow (2 checks)
+[ OK ] metrics_counters_and_render (8 checks)
+[ OK ] metrics_cache_hit_ratio (1 checks)
+[ OK ] json_parse_primitives (11 checks)
+[ OK ] json_parse_string_escapes (5 checks)
+[ OK ] json_parse_nested_structures (12 checks)
+[ OK ] json_parse_errors (15 checks)
+[ OK ] json_dump_roundtrip (4 checks)
+[ OK ] json_dump_escapes_control_characters (3 checks)
+[ OK ] json_numbers_keep_integer_form (6 checks)
+[ OK ] json_object_helpers (11 checks)
+[ OK ] json_array_helpers (7 checks)
+[ OK ] json_pretty_dump_is_stable (3 checks)
+[ OK ] json_accessor_fallbacks (5 checks)
+[ OK ] http_method_helpers (7 checks)
+[ OK ] http_request_line_and_query (9 checks)
+[ OK ] http_request_split_every_byte (322 checks)
+[ OK ] http_request_body_with_content_length (4 checks)
+[ OK ] http_request_chunked_body (2 checks)
+[ OK ] http_request_chunked_split_mid_chunk (144 checks)
+[ OK ] http_request_limits (4 checks)
+[ OK ] http_request_rejects_malformed (18 checks)
+[ OK ] http_request_pipelining (5 checks)
+[ OK ] http_request_keep_alive_rules (3 checks)
+[ OK ] http_response_content_length (5 checks)
+[ OK ] http_response_chunked_streaming (3 checks)
+[ OK ] http_response_close_delimited (3 checks)
+[ OK ] http_response_no_body_status (2 checks)
+[ OK ] http_response_truncated_body_fails (2 checks)
+[ OK ] http_serialize_roundtrip (8 checks)
+[ OK ] http_chunk_encoding (5 checks)
+[ OK ] http_url_codec (6 checks)
+[ OK ] event_loop_post_and_stop (3 checks)
+[ OK ] event_loop_timers (5 checks)
+[ OK ] event_loop_repeating_timer (2 checks)
+[ OK ] socket_pair_roundtrip (3 checks)
+[ OK ] resolver_resolves_localhost_async (4 checks)
+2026-11-22 11:27:44.118 [INFO] [5e062546] tcp server listening on port 58021 with 2 io threads (wsapoll)
+2026-11-22 11:27:44.118 [INFO] [5e062546] tcp server stopped
+[ OK ] tcp_server_echo (7 checks)
+2026-11-22 11:27:44.118 [INFO] [5e062546] tcp server listening on port 58029 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.119 [INFO] [5e062546] tcp server stopped
+[ OK ] tcp_server_http_roundtrip (8 checks)
+2026-11-22 11:27:44.119 [INFO] [5e062546] tcp server listening on port 58035 with 1 io threads (wsapoll)
+[ OK ] tcp_server_tracks_active_connections (8 checks)
+2026-11-22 11:27:44.133 [INFO] [5e062546] tcp server stopped
+[ OK ] sse_parse_basic_and_split (116 checks)
+[ OK ] sse_multiline_data_and_fields (6 checks)
+[ OK ] tokenizer_estimates (7 checks)
+[ OK ] prompt_render (7 checks)
+[ OK ] embedding_similarity (6 checks)
+[ OK ] lru_cache_behaviour (11 checks)
+[ OK ] semantic_cache_behaviour (5 checks)
+[ OK ] rate_limiter_token_bucket (6 checks)
+[ OK ] router_weighted_round_robin_and_failover (46 checks)
+[ OK ] router_circuit_breaker (14 checks)
+2026-11-22 11:27:44.164 [INFO] [5e062546] tcp server listening on port 58041 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.164 [INFO] [5e062546] mock upstream listening on port 58041
+2026-11-22 11:27:44.180 [INFO] [5e062546] tcp server stopped
+[ OK ] openai_client_non_stream (6 checks)
+2026-11-22 11:27:44.180 [INFO] [5e062546] tcp server listening on port 58049 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.180 [INFO] [5e062546] mock upstream listening on port 58049
+2026-11-22 11:27:44.273 [INFO] [5e062546] tcp server stopped
+[ OK ] openai_client_stream (8 checks)
+2026-11-22 11:27:44.274 [INFO] [5e062546] tcp server listening on port 58057 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.274 [INFO] [5e062546] mock upstream listening on port 58057
+2026-11-22 11:27:44.274 [INFO] [5e062546] tcp server listening on port 58062 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.274 [INFO] [5e062546] gateway ready: 1 upstream(s), 1 io thread(s), cache enabled
+2026-11-22 11:27:44.276 [INFO] [5e062546] tcp server stopped
+[ OK ] e2e_health_models_metrics (2026-11-22 11:27:44.276 [INFO] [5e062546] tcp server stopped
+12 checks)
+2026-11-22 11:27:44.276 [INFO] [5e062546] tcp server listening on port 58072 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.276 [INFO] [5e062546] mock upstream listening on port 58072
+2026-11-22 11:27:44.276 [INFO] [5e062546] tcp server listening on port 58077 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.276 [INFO] [5e062546] gateway ready: 1 upstream(s), 1 io thread(s), cache enabled
+2026-11-22 11:27:44.278 [INFO] [5e062546] tcp server stopped
+[ OK ] e2e_chat_non_stream_and_cache (10 checks)
+2026-11-22 11:27:44.278 [INFO] [5e062546] tcp server stopped
+2026-11-22 11:27:44.278 [INFO] [5e062546] tcp server listening on port 58087 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.278 [INFO] [5e062546] mock upstream listening on port 58087
+2026-11-22 11:27:44.278 [INFO] [5e062546] tcp server listening on port 58092 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.278 [INFO] [5e062546] gateway ready: 1 upstream(s), 1 io thread(s), cache enabled
+2026-11-22 11:27:44.383 [INFO] [5e062546] tcp server stopped
+2026-11-22 11:27:44.383 [INFO] [5e062546] tcp server stopped
+[ OK ] e2e_chat_stream (8 checks)
+2026-11-22 11:27:44.384 [INFO] [5e062546] tcp server listening on port 58099 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.384 [INFO] [5e062546] mock upstream listening on port 58099
+2026-11-22 11:27:44.384 [INFO] [5e062546] tcp server listening on port 58104 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.384 [INFO] [5e062546] gateway ready: 1 upstream(s), 1 io thread(s), cache enabled
+2026-11-22 11:27:44.385 [INFO] [5e062546] tcp server stopped
+[ OK ] e2e_auth_and_validation (7 checks)
+2026-11-22 11:27:44.385 [INFO] [5e062546] tcp server stopped
+2026-11-22 11:27:44.385 [INFO] [5e062546] tcp server listening on port 58114 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.385 [INFO] [5e062546] mock upstream listening on port 58114
+2026-11-22 11:27:44.386 [INFO] [5e062546] tcp server listening on port 58119 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.386 [INFO] [5e062546] gateway ready: 1 upstream(s), 1 io thread(s), cache disabled
+2026-11-22 11:27:44.399 [INFO] [5e062546] tcp server stopped
+2026-11-22 11:27:44.399 [INFO] [5e062546] tcp server stopped
+[ OK ] e2e_rate_limit (6 checks)
+2026-11-22 11:27:44.399 [INFO] [5e062546] tcp server listening on port 58127 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.399 [INFO] [5e062546] mock upstream listening on port 58127
+2026-11-22 11:27:44.399 [INFO] [5e062546] tcp server listening on port 58132 with 1 io threads (wsapoll)
+2026-11-22 11:27:44.399 [INFO] [5e062546] gateway ready: 2 upstream(s), 1 io thread(s), cache disabled
+2026-11-22 11:27:46.400 [WARN] [5c1f5bab] upstream 'dead' failed: upstream request timed out
+2026-11-22 11:27:48.403 [WARN] [5c1f5bab] upstream 'dead' failed: upstream request timed out
+2026-11-22 11:27:48.404 [INFO] [5e062546] tcp server stopped
+[ OK ] 2026-11-22 11:27:48.404 [INFO] [5e062546] tcp server stopped
+e2e_failover_to_healthy_upstream (7 checks)
+2026-11-22 11:27:48.404 [INFO] [5e062546] tcp server listening on port 58148 with 1 io threads (wsapoll)
+2026-11-22 11:27:48.404 [INFO] [5e062546] mock upstream listening on port 58148
+2026-11-22 11:27:48.405 [INFO] [5e062546] tcp server listening on port 58153 with 1 io threads (wsapoll)
+2026-11-22 11:27:48.405 [INFO] [5e062546] gateway ready: 1 upstream(s), 1 io thread(s), cache enabled
+2026-11-22 11:27:48.405 [INFO] [5e062546] tcp server stopped
+[ OK ] e2e_body_limit (32026-11-22 11:27:48.405 [INFO] [5e062546] tcp server stopped
+ checks)
+
+68/68 tests passed, 61056 assertions
+<end of output>
+Test time =   4.56 sec
+----------------------------------------------------------
+Test Passed.
+"aegis_tests" end time: Nov 22 11:27 Coordinated Universal Time
+"aegis_tests" time elapsed: 00:00:04
+----------------------------------------------------------
+
+End testing: Nov 22 11:27 Coordinated Universal Time
