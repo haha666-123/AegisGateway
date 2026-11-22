@@ -28,6 +28,12 @@ logs/
 *.pid
 ci/last-run.log
 
+# local build/test logs
+cfg.txt
+build_msvc.txt
+msvc_test.txt
+*.log.txt
+
 # misc
 .DS_Store
 Thumbs.db

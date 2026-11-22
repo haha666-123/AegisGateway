@@ -17,7 +17,10 @@ AEGIS_TEST(json_parse_primitives) {
     AEGIS_CHECK_EQ(parse_json("-17")->as_int64(), int64_t{-17});
     AEGIS_CHECK_EQ(parse_json("3.5")->as_double(), 3.5);
     AEGIS_CHECK_EQ(parse_json("1e3")->as_double(), 1000.0);
-    AEGIS_CHECK_EQ(parse_json("\"hello\"")->as_string(), std::string_view("hello"));
+    // Bind the document before taking a view into it: a view of the temporary
+    // would dangle once the full expression ends (caught by ASan in CI).
+    const auto greeting = parse_json("\"hello\"");
+    AEGIS_CHECK_EQ(greeting->as_string(), std::string_view("hello"));
     AEGIS_CHECK_EQ(parse_json("  \t\r\n 7 \n")->as_int64(), int64_t{7});
 }
 

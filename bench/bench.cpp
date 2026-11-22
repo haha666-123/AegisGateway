@@ -327,7 +327,11 @@ int main(int argc, char** argv) {
 #else
     const char* build = "debug";
 #endif
+#if defined(_MSC_VER)
+    std::printf("aegis_bench (%s build, msvc %d)\n", build, static_cast<int>(_MSC_VER));
+#else
     std::printf("aegis_bench (%s build, gcc %s)\n", build, __VERSION__);
+#endif
 
     run("json", bench_json_parse);
     run("http", bench_http_parse);
