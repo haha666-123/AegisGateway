@@ -1,0 +1,48 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8080,
+    "io_threads": 2,
+    "max_connections": 2000,
+    "idle_timeout_ms": 65000
+  },
+  "logging": {
+    "level": "debug",
+    "console": true,
+    "file": "",
+    "max_file_bytes": 33554432,
+    "max_files": 4
+  },
+  "limits": {
+    "max_header_bytes": 16384,
+    "max_body_bytes": 4194304
+  },
+  "upstreams": [
+    {
+      "name": "mock",
+      "base_url": "http://127.0.0.1:9001",
+      "api_key": "sk-upstream",
+      "models": ["mock-1"],
+      "weight": 1
+    }
+  ],
+  "rate_limit": {
+    "enabled": true,
+    "requests_per_second": 50,
+    "burst": 100
+  },
+  "cache": {
+    "enabled": true,
+    "capacity": 256,
+    "ttl_seconds": 300,
+    "semantic": {
+      "enabled": false,
+      "threshold": 0.92
+    }
+  },
+  "timeouts": {
+    "connect_ms": 3000,
+    "upstream_ms": 30000
+  },
+  "gateway_keys": ["sk-local"]
+}

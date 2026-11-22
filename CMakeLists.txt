@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.21)
 
 project(Aegis
     VERSION 1.0.0
@@ -43,14 +43,24 @@ set(AEGIS_CORE_SRC
     src/common/Json.cpp
     src/common/Log.cpp
     src/common/Metrics.cpp
+    src/common/ThreadPool.cpp
+    src/common/RateLimiter.cpp
     src/net/Socket.cpp
     src/net/Poller.cpp
     src/net/EventLoop.cpp
     src/net/Http.cpp
-    src/common/ThreadPool.cpp
     src/net/Resolver.cpp
     src/net/TcpServer.cpp
     src/net/HttpClient.cpp
+    src/ai/Sse.cpp
+    src/ai/Tokenizer.cpp
+    src/ai/Prompt.cpp
+    src/ai/Embedding.cpp
+    src/ai/Cache.cpp
+    src/ai/Router.cpp
+    src/ai/OpenAiClient.cpp
+    src/app/Config.cpp
+    src/app/Gateway.cpp
 )
 
 set(AEGIS_CORE_HDR
@@ -60,15 +70,25 @@ set(AEGIS_CORE_HDR
     src/common/Json.h
     src/common/Log.h
     src/common/Metrics.h
+    src/common/ThreadPool.h
+    src/common/RateLimiter.h
     src/net/Buffer.h
     src/net/Socket.h
     src/net/Poller.h
     src/net/EventLoop.h
     src/net/Http.h
-    src/common/ThreadPool.h
     src/net/Resolver.h
     src/net/TcpServer.h
     src/net/HttpClient.h
+    src/ai/Sse.h
+    src/ai/Tokenizer.h
+    src/ai/Prompt.h
+    src/ai/Embedding.h
+    src/ai/Cache.h
+    src/ai/Router.h
+    src/ai/OpenAiClient.h
+    src/app/Config.h
+    src/app/Gateway.h
 )
 
 add_library(aegis_core STATIC ${AEGIS_CORE_SRC} ${AEGIS_CORE_HDR})
@@ -77,7 +97,6 @@ target_include_directories(aegis_core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
 
 target_link_libraries(aegis_core PUBLIC Threads::Threads)
-
 target_compile_options(aegis_core PRIVATE ${AEGIS_WARN_FLAGS})
 
 if(WIN32)
@@ -101,10 +120,20 @@ if(AEGIS_SANITIZE AND NOT MSVC)
     target_link_options(aegis_core PUBLIC -fsanitize=address,undefined)
 endif()
 
+# ------------------------------------------------------------------ test helpers
+add_library(aegis_tools STATIC tools/MockUpstream.cpp tools/MockUpstream.h)
+target_link_libraries(aegis_tools PUBLIC aegis_core)
+target_include_directories(aegis_tools PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/tools>)
+target_compile_options(aegis_tools PRIVATE ${AEGIS_WARN_FLAGS})
+
 # ------------------------------------------------------------------ binary
 add_executable(aegis src/app/main.cpp)
 target_link_libraries(aegis PRIVATE aegis_core)
 target_compile_options(aegis PRIVATE ${AEGIS_WARN_FLAGS})
+
+add_executable(mock_upstream tools/mock_upstream_main.cpp)
+target_link_libraries(mock_upstream PRIVATE aegis_tools)
+target_compile_options(mock_upstream PRIVATE ${AEGIS_WARN_FLAGS})
 
 # ------------------------------------------------------------------ tests
 if(AEGIS_BUILD_TESTS)
@@ -116,8 +145,10 @@ if(AEGIS_BUILD_TESTS)
         tests/test_json.cpp
         tests/test_http.cpp
         tests/test_net.cpp
+        tests/test_ai.cpp
+        tests/test_e2e.cpp
     )
-    target_link_libraries(aegis_tests PRIVATE aegis_core)
+    target_link_libraries(aegis_tests PRIVATE aegis_core aegis_tools)
     target_compile_options(aegis_tests PRIVATE ${AEGIS_WARN_FLAGS})
     add_test(NAME aegis_tests COMMAND aegis_tests)
 endif()
@@ -125,12 +156,12 @@ endif()
 # ------------------------------------------------------------------ bench
 if(AEGIS_BUILD_BENCH)
     add_executable(aegis_bench bench/bench.cpp)
-    target_link_libraries(aegis_bench PRIVATE aegis_core)
+    target_link_libraries(aegis_bench PRIVATE aegis_core aegis_tools)
     target_compile_options(aegis_bench PRIVATE ${AEGIS_WARN_FLAGS})
 endif()
 
 # ------------------------------------------------------------------ layout
-set_target_properties(aegis aegis_tests aegis_bench PROPERTIES
+set_target_properties(aegis aegis_tests aegis_bench mock_upstream PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 message(STATUS "Aegis | compiler ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}"

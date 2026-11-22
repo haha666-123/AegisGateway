@@ -51,8 +51,15 @@ public:
     HttpClient(const HttpClient&) = delete;
     HttpClient& operator=(const HttpClient&) = delete;
 
-    // Must be called on the loop thread.
-    void send(Request request, Callbacks callbacks);
+    // Must be called on the loop thread. Returns a request id usable with
+    // pause()/resume() for upstream back pressure.
+    std::uint64_t send(Request request, Callbacks callbacks);
+
+    // Temporarily stop/restart reading the upstream socket when the client is
+    // slower than the upstream. Unknown ids are ignored.
+    void pause(std::uint64_t id);
+    void resume(std::uint64_t id);
+    void cancel(std::uint64_t id);
 
     void cancel_all();
 

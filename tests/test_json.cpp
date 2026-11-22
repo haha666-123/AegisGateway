@@ -26,8 +26,9 @@ AEGIS_TEST(json_parse_string_escapes) {
     AEGIS_CHECK(value.has_value());
     AEGIS_CHECK_EQ(value->as_string(), std::string_view("a\"b\\c/d\n\t"));
 
+    // UTF-8 bytes for "\u4f60\u597d" (ni hao).
     const auto unicode = parse_json(R"("\u4f60\u597d")");
-    AEGIS_CHECK_EQ(unicode->as_string(), std::string_view("你好"));
+    AEGIS_CHECK_EQ(unicode->as_string(), std::string_view("\xE4\xBD\xA0\xE5\xA5\xBD"));
 
     const auto emoji = parse_json(R"("\ud83d\ude00")");
     AEGIS_CHECK(emoji.has_value());

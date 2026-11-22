@@ -45,6 +45,21 @@ public:
         finish(Status::error(errc::kClosed, "request cancelled"));
     }
 
+    void pause() {
+        if (done_ || handle_ == kInvalidHandle) return;
+        if ((interest_ & kReadable) == 0) return;
+        interest_ &= ~kReadable;
+        loop_->update(handle_, interest_);
+    }
+
+    void resume() {
+        if (done_ || handle_ == kInvalidHandle) return;
+        if ((interest_ & kReadable) != 0) return;
+        interest_ |= kReadable;
+        loop_->update(handle_, interest_);
+        on_readable();
+    }
+
 private:
     enum class Phase { Connecting, Active };
 
@@ -279,12 +294,28 @@ HttpClient::HttpClient(EventLoop& loop, Resolver& resolver,
 
 HttpClient::~HttpClient() { cancel_all(); }
 
-void HttpClient::send(Request request, Callbacks callbacks) {
+std::uint64_t HttpClient::send(Request request, Callbacks callbacks) {
     const std::uint64_t id = next_id_++;
     auto session = std::make_shared<Session>(*this, id, std::move(request), std::move(callbacks));
     sessions_[id] = session;
     active_.fetch_add(1, std::memory_order_relaxed);
     session->start();
+    return id;
+}
+
+void HttpClient::pause(std::uint64_t id) {
+    const auto it = sessions_.find(id);
+    if (it != sessions_.end()) it->second->pause();
+}
+
+void HttpClient::resume(std::uint64_t id) {
+    const auto it = sessions_.find(id);
+    if (it != sessions_.end()) it->second->resume();
+}
+
+void HttpClient::cancel(std::uint64_t id) {
+    const auto it = sessions_.find(id);
+    if (it != sessions_.end()) it->second->cancel();
 }
 
 void HttpClient::release(std::uint64_t id) {
