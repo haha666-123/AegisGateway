@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  # ------------------------------------------------------------------ Linux release
+  linux-gcc:
+    name: linux / gcc-13 / release
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build g++-13 gcc-13
+
+      - name: Configure
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-13 \
+            -DAEGIS_WARNINGS_AS_ERRORS=ON
+
+      - name: Build
+        run: |
+          set -o pipefail
+          cmake --build build -j"$(nproc)" 2>&1 | tee build.log
+
+      - name: Unit tests
+        run: |
+          set -o pipefail
+          ctest --test-dir build --output-on-failure 2>&1 | tee test.log
+
+      - name: ABI / dependency sanity
+        run: |
+          set -o pipefail
+          ldd build/bin/aegis | tee ldd.log
+
+      - name: Publish report branch
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci_publish.sh ci-report-linux-gcc
+
+  # ------------------------------------------------------------------ Linux ASan/UBSan
+  linux-asan:
+    name: linux / gcc-13 / asan+ubsan
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build g++-13 gcc-13
+
+      - name: Configure
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_COMPILER=g++-13 \
+            -DAEGIS_SANITIZE=ON
+
+      - name: Build
+        run: |
+          set -o pipefail
+          cmake --build build -j"$(nproc)" 2>&1 | tee build.log
+
+      - name: Unit tests under sanitizers
+        env:
+          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1:strict_string_checks=1
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+        run: |
+          set -o pipefail
+          ctest --test-dir build --output-on-failure 2>&1 | tee test.log
+
+      - name: Publish report branch
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci_publish.sh ci-report-linux-asan
+
+  # ------------------------------------------------------------------ Windows MSVC
+  windows-msvc:
+    name: windows / msvc / release
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: |
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DAEGIS_WARNINGS_AS_ERRORS=OFF
+
+      - name: Build
+        run: |
+          cmake --build build --config Release -j 4
+
+      - name: Unit tests
+        run: |
+          ctest --test-dir build -C Release --output-on-failure
+
+      - name: Publish report branch
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci_publish.sh ci-report-windows-msvc

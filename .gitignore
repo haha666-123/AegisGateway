@@ -1,0 +1,33 @@
+# build output
+build/
+build-*/
+out/
+cmake-build-*/
+
+# binaries
+*.exe
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.pdb
+*.ilk
+*.dll
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+
+# runtime artefacts
+*.log
+logs/
+*.pid
+ci/last-run.log
+
+# misc
+.DS_Store
+Thumbs.db
