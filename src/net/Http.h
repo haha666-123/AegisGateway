@@ -145,6 +145,7 @@ public:
     [[nodiscard]] const HeaderMap& headers() const noexcept { return headers_; }
     [[nodiscard]] const Status& error() const noexcept { return error_; }
     [[nodiscard]] std::size_t body_bytes() const noexcept { return body_bytes_; }
+    [[nodiscard]] bool headers_complete() const noexcept { return headers_done_; }
 
     void reset();
 

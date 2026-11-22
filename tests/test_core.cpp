@@ -29,14 +29,6 @@ std::string read_file(const std::filesystem::path& path) {
     return std::string(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>());
 }
 
-std::size_t count_lines(const std::string& text) {
-    std::size_t count = 0;
-    for (const char c : text) {
-        if (c == '\n') ++count;
-    }
-    return count;
-}
-
 }  // namespace
 
 AEGIS_TEST(status_basic) {

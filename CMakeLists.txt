@@ -50,6 +50,7 @@ set(AEGIS_CORE_SRC
     src/common/ThreadPool.cpp
     src/net/Resolver.cpp
     src/net/TcpServer.cpp
+    src/net/HttpClient.cpp
 )
 
 set(AEGIS_CORE_HDR
@@ -67,6 +68,7 @@ set(AEGIS_CORE_HDR
     src/common/ThreadPool.h
     src/net/Resolver.h
     src/net/TcpServer.h
+    src/net/HttpClient.h
 )
 
 add_library(aegis_core STATIC ${AEGIS_CORE_SRC} ${AEGIS_CORE_HDR})
