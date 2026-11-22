@@ -166,6 +166,65 @@ curl -N http://127.0.0.1:8080/v1/chat/completions \
 
 ---
 
+## 运行效果
+
+本地一次完整起停（Windows 下 backend 为 `wsapoll`，Linux 下同一份代码走 `epoll`）：
+
+```text
+$ ./build/bin/mock_upstream --port 9001 --tokens 4 --delay-ms 10
+mock upstream on http://127.0.0.1:9001/v1 (model=mock-1, tokens=4, delay=10ms)
+
+$ ./build/bin/aegis --config config/local.json
+[INFO] aegis 1.0.0 starting
+[INFO] config: listen=127.0.0.1:8080 io_threads=2 upstreams=1 rate_limit=on cache=on
+[INFO] gateway ready: 1 upstream(s), 2 io thread(s), cache enabled
+[INFO] tcp server listening on port 8080 with 2 io threads (wsapoll)
+[INFO] listening on 127.0.0.1:8080
+[INFO] try: curl -s http://127.0.0.1:8080/healthz
+```
+
+非流式请求（携带缓存头语义：第二次相同请求命中进程内缓存，不再访问上游）：
+
+```text
+$ curl -s http://127.0.0.1:8080/v1/chat/completions \
+    -H 'Authorization: Bearer sk-local' -H 'Content-Type: application/json' \
+    -d '{"model":"mock-1","messages":[{"role":"user","content":"hi"}]}'
+{"id":"chatcmpl-mock","object":"chat.completion","model":"mock-1",
+ "choices":[{"index":0,"message":{"role":"assistant","content":"Hello from the mock upstream."},
+             "finish_reason":"stop"}],
+ "usage":{"prompt_tokens":6,"completion_tokens":4,"total_tokens":10}}
+```
+
+流式请求（网关边收边转，客户端按 SSE 逐帧消费）：
+
+```text
+$ curl -sN http://127.0.0.1:8080/v1/chat/completions \
+    -H 'Authorization: Bearer sk-local' -H 'Content-Type: application/json' \
+    -d '{"model":"mock-1","stream":true,"messages":[{"role":"user","content":"hi"}]}'
+
+data: {"id":"chatcmpl-mock","object":"chat.completion.chunk",...,"content":"tok4 "}
+data: {"id":"chatcmpl-mock","object":"chat.completion.chunk",...,"content":"tok3 "}
+data: {"id":"chatcmpl-mock","object":"chat.completion.chunk",...,"content":"tok2 "}
+data: {"id":"chatcmpl-mock","object":"chat.completion.chunk",...,"content":"tok1 "}
+data: {"id":"chatcmpl-mock","object":"chat.completion.chunk","choices":[],
+       "usage":{"prompt_tokens":6,"completion_tokens":4,"total_tokens":10}}
+data: [DONE]
+```
+
+指标端点（Prometheus 文本格式）：
+
+```text
+$ curl -s http://127.0.0.1:8080/metrics | head -n 6
+# HELP aegis_http_requests_total HTTP requests accepted by the gateway
+# TYPE aegis_http_requests_total counter
+aegis_http_requests_total 4
+# HELP aegis_http_responses_total HTTP responses written by the gateway
+# TYPE aegis_http_responses_total counter
+aegis_http_responses_total 3
+```
+
+---
+
 ## 配置
 
 配置为 JSON 文件（`--config`），环境变量可覆盖密钥：
@@ -209,7 +268,7 @@ curl -N http://127.0.0.1:8080/v1/chat/completions \
 ## 测试
 
 ```bash
-ctest --test-dir build --output-on-failure     # 49 个用例
+ctest --test-dir build --output-on-failure     # 68 个用例
 ./build/bin/aegis_tests --list                 # 列出用例
 ./build/bin/aegis_tests --filter=json          # 按名称过滤
 ```
@@ -220,25 +279,37 @@ ctest --test-dir build --output-on-failure     # 49 个用例
 - HTTP：请求/响应解析、**在每个字节边界切分输入**、chunked、pipeline、大小限制、拒绝畸形报文；
 - 并发：MPSC 队列 4 生产者压力测试（2 万条不丢不重）、令牌桶并发、线程池；
 - 网络：事件循环（post / 定时器 / 取消）、socketpair、TCP echo、keep-alive 往返、连接回收；
-- AI 层：SSE 分帧、token 估算、路由故障转移、缓存命中/过期。
+- AI 层：SSE 分帧、token 估算、路由故障转移与熔断、缓存命中/过期、OpenAI 客户端（真实 TCP 往返）；
+- 端到端：网关 + 假上游，覆盖鉴权、限流 429、缓存命中、流式转发、故障转移、请求体超限 413。
 
 CI 在 Ubuntu 上跑 GCC 13（Release）与 ASan+UBSan（Debug），在 Windows 上跑 MSVC。
+本地实测：68/68 通过（Windows MinGW GCC 13.1 与 Ubuntu GCC 13 各跑一遍）。
 
 ---
 
 ## 性能
 
-> 数据由 `bench/bench.cpp` 在本机测得（见下方命令），不做过拟合的单点宣传。
+> 数据由 `bench/bench.cpp` 测得，环境：AMD Ryzen 5 6600H（6C/12T）、Windows 11、
+> MinGW GCC 13.1、`-O3 -DNDEBUG`、单进程。数字只用于横向比较本项目的几条路径，
+> 不是对真实模型时延的承诺（真实时延由上游决定）。
 
 ```bash
 ./build/bin/aegis_bench --all
 ```
 
-| 场景 | 指标 |
-| --- | --- |
-| HTTP 请求解析（单核） | 见 bench 输出 |
-| MPSC 队列吞吐（4 生产者） | 见 bench 输出 |
-| 本地 echo 端到端（1 I/O 线程） | 见 bench 输出 |
+| 基准 | 结果 | 说明 |
+| --- | --- | --- |
+| `json_parse` | 18.3 万次/秒，约 210 MB/s | 约 1.2 KB 的 chat 请求体，含 8 条消息 |
+| `http_request_parse` | 208 万次/秒，约 2.7 GB/s | 增量解析器，含头部解析与 body 拷贝 |
+| `sse_parse` | 173 万次/秒，约 2.2 GB/s | 17 个事件的流，逐字节边界安全 |
+| `tokenizer` | 560 万次/秒 | 启发式 token 估算 |
+| `mpsc_queue` | 1685 万次/秒 | 4 生产者 1 消费者，200 万条无锁入队/出队 |
+| `rate_limiter` | 2125 万次/秒 | 单键令牌桶（含互斥） |
+| `end_to_end` | 2385 请求/秒 | 4 客户端线程 → 网关 1 个 I/O 线程 → 假上游，**每请求新连接、关闭缓存** |
+
+`end_to_end` 刻意关闭了缓存并且不复用连接，因此它是"最坏情况"的下限；
+开启缓存后重复请求不再走上游，吞吐由网关自身的 HTTP 处理决定。
+
 
 ---
 
